@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .report-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .report-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .location-help {
+            background: var(--background-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .btn-cancel {
+            background: var(--text-secondary);
+        }
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Reportar Mascota Perdida o Encontrada</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/mascotas">🐕 Mascotas</a></li>
+            <li><a href="/donaciones">💝 Donaciones</a></li>
+            <li><a href="/mapa">🗺️ Mapa</a></li>
+            <li><a href="/profile">👤 Mi Perfil</a></li>
+            <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="report-container">
+            <h2>📢 Reportar Mascota</h2>
+            
+            <% if (error) { %>
+                <div class="error" style="margin-bottom: 2rem;">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <div class="location-help">
+                <strong>💡 Consejo:</strong> Para obtener las coordenadas exactas, puedes usar 
+                <a href="https://maps.google.com" target="_blank">Google Maps</a>. Haz clic derecho en el lugar 
+                y selecciona "¿Qué hay aquí?" para ver las coordenadas.
+            </div>
+
+            <form action="/mapa/reportar" method="POST">
+                <div class="form-group">
+                    <label for="type">Tipo de Reporte *</label>
+                    <select id="type" name="type" required>
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="perdido" <%= (formData && formData.type === 'perdido') ? 'selected' : '' %>>🔴 Mascota Perdida</option>
+                        <option value="encontrado" <%= (formData && formData.type === 'encontrado') ? 'selected' : '' %>>🟢 Mascota Encontrada</option>
+                    </select>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="petName">Nombre de la Mascota *</label>
+                        <input type="text" id="petName" name="petName" 
+                               value="<%= formData ? formData.petName : '' %>" 
+                               required placeholder="Ej: Max, Luna">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="petType">Tipo de Mascota *</label>
+                        <select id="petType" name="petType" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="perro" <%= (formData && formData.petType === 'perro') ? 'selected' : '' %>>🐕 Perro</option>
+                            <option value="gato" <%= (formData && formData.petType === 'gato') ? 'selected' : '' %>>🐱 Gato</option>
+                            <option value="otro" <%= (formData && formData.petType === 'otro') ? 'selected' : '' %>>🐾 Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="breed">Raza *</label>
+                        <input type="text" id="breed" name="breed" 
+                               value="<%= formData ? formData.breed : '' %>" 
+                               required placeholder="Ej: Labrador, Mestizo">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="color">Color *</label>
+                        <input type="text" id="color" name="color" 
+                               value="<%= formData ? formData.color : '' %>" 
+                               required placeholder="Ej: Negro, Blanco, Marrón">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="lat">Latitud *</label>
+                        <input type="number" id="lat" name="lat" step="any"
+                               value="<%= formData ? formData.lat : '4.6097' %>" 
+                               required placeholder="Ej: 4.6097">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lng">Longitud *</label>
+                        <input type="number" id="lng" name="lng" step="any"
+                               value="<%= formData ? formData.lng : '-74.0817' %>" 
+                               required placeholder="Ej: -74.0817">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Dirección o Barrio *</label>
+                    <input type="text" id="address" name="address" 
+                           value="<%= formData ? formData.address : '' %>" 
+                           required placeholder="Ej: Bogotá, Chapinero, Cra 15 # 85-20">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción *</label>
+                    <textarea id="description" name="description" rows="4" required 
+                              placeholder="Describe a la mascota, características especiales, collar, etc."><%= formData ? formData.description : '' %></textarea>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="contactPhone">Teléfono de Contacto *</label>
+                        <input type="tel" id="contactPhone" name="contactPhone" 
+                               value="<%= formData ? formData.contactPhone : (user ? user.phone : '') %>" 
+                               required placeholder="Ej: 3001234567">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactEmail">Email de Contacto</label>
+                        <input type="email" id="contactEmail" name="contactEmail" 
+                               value="<%= formData ? formData.contactEmail : (user ? user.email : '') %>" 
+                               placeholder="Ej: tu@email.com">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/mapa" class="btn btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn">📢 Publicar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

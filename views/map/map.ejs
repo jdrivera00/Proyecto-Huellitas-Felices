@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        .map-legend {
+            background: var(--surface-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .legend-red {
+            background: #ff6b6b;
+        }
+        .legend-green {
+            background: #51cf66;
+        }
+        .reports-sidebar {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .report-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .report-item:hover {
+            background: var(--background-color);
+        }
+        .report-item:last-child {
+            border-bottom: none;
+        }
+        .report-type {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .report-type.perdido {
+            color: #ff6b6b;
+        }
+        .report-type.encontrado {
+            color: #51cf66;
+        }
+        .report-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .empty-reports {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        .map-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .map-container {
+                grid-template-columns: 1fr;
+            }
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Mapa Interactivo - Mascotas Perdidas y Encontradas</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/mascotas">🐕 Mascotas</a></li>
+            <li><a href="/donaciones">💝 Donaciones</a></li>
+            <li><a href="/mapa" style="border-bottom-color: var(--primary-color);">🗺️ Mapa</a></li>
+            <% if (user) { %>
+                <li><a href="/profile">👤 Mi Perfil</a></li>
+                <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+            <% } else { %>
+                <li><a href="/login">🔐 Iniciar Sesión</a></li>
+            <% } %>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="map-header">
+            <h2>🗺️ Mapa Interactivo</h2>
+            <% if (user) { %>
+                <a href="/mapa/reportar" class="btn">📢 Reportar Mascota</a>
+            <% } else { %>
+                <a href="/login" class="btn">🔐 Iniciar Sesión para Reportar</a>
+            <% } %>
+        </div>
+
+        <!-- Leyenda del mapa -->
+        <div class="map-legend">
+            <h3>📋 Leyenda del Mapa</h3>
+            <div class="legend-item">
+                <div class="legend-color legend-red"></div>
+                <span>🔴 Mascotas Perdidas - ¡Necesitan ayuda!</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-green"></div>
+                <span>🟢 Mascotas Encontradas - ¿Son tuyas?</span>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <!-- Mapa -->
+            <div>
+                <div id="map"></div>
+            </div>
+
+            <!-- Lista de reportes -->
+            <div class="reports-sidebar">
+                <h3>📝 Reportes Recientes</h3>
+                <div id="reports-list">
+                    <!-- Los reportes se cargarán con JavaScript -->
+                    <div class="empty-reports">
+                        <p>📭 No hay reportes recientes</p>
+                        <% if (user) { %>
+                            <a href="/mapa/reportar" class="btn" style="margin-top: 1rem;">➕ Crear Primer Reporte</a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Inicializar mapa
+        const map = L.map('map').setView([4.6097, -74.0817], 12); // Bogotá por defecto
+
+        // Capa del mapa (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Marcadores
+        const markers = [];
+        let popupOpen = false;
+
+        // Cargar datos del mapa
+        async function loadMapData() {
+            try {
+                const response = await fetch('/api/mapa/datos');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayReports(data.data);
+                    addMarkersToMap(data.data);
+                }
+            } catch (error) {
+                console.error('Error cargando datos del mapa:', error);
+            }
+        }
+
+        // Mostrar reportes en la lista
+        function displayReports(reports) {
+            const reportsList = document.getElementById('reports-list');
+            
+            if (reports.length === 0) {
+                reportsList.innerHTML = `
+                    <div class="empty-reports">
+                        <p>📭 No hay reportes recientes</p>
+                        <% if (user) { %>
+                            <a href="/mapa/reportar" class="btn" style="margin-top: 1rem;">➕ Crear Primer Reporte</a>
+                        <% } %>
+                    </div>
+                `;
+                return;
+            }
+
+            reportsList.innerHTML = reports.map(report => `
+                <div class="report-item" onclick="focusMarker('${report._id}')">
+                    <div class="report-type ${report.type}">
+                        ${report.type === 'perdido' ? '🔴 Perdido' : '🟢 Encontrado'}: ${report.petName}
+                    </div>
+                    <div class="report-details">
+                        <strong>Tipo:</strong> ${report.petType === 'perro' ? '🐕 Perro' : report.petType === 'gato' ? '🐱 Gato' : '🐾 Otro'}<br>
+                        <strong>Ubicación:</strong> ${report.address}<br>
+                        <strong>Fecha:</strong> ${new Date(report.date).toLocaleDateString('es-ES')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Agregar marcadores al mapa
+        function addMarkersToMap(reports) {
+            // Limpiar marcadores anteriores
+            markers.forEach(marker => map.removeLayer(marker));
+            markers.length = 0;
+
+            reports.forEach(report => {
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `
+                        <div style="
+                            background: ${report.markerColor === 'red' ? '#ff6b6b' : '#51cf66'};
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 50%;
+                            border: 3px solid white;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 14px;
+                            font-weight: bold;
+                        ">
+                            ${report.petType === 'perro' ? '🐕' : report.petType === 'gato' ? '🐱' : '🐾'}
+                        </div>
+                    `,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15]
+                });
+
+                const marker = L.marker([report.location.lat, report.location.lng], { icon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div style="min-width: 200px;">
+                            <h4 style="margin: 0 0 10px 0; color: ${report.markerColor === 'red' ? '#ff6b6b' : '#51cf66'};">
+                                ${report.type === 'perdido' ? '🔴 Perdido' : '🟢 Encontrado'}: ${report.petName}
+                            </h4>
+                            <p><strong>Tipo:</strong> ${report.petType === 'perro' ? '🐕 Perro' : report.petType === 'gato' ? '🐱 Gato' : '🐾 Otro'}</p>
+                            <p><strong>Ubicación:</strong> ${report.address}</p>
+                            <p><strong>Descripción:</strong> ${report.description}</p>
+                            <p><strong>Fecha:</strong> ${new Date(report.date).toLocaleDateString('es-ES')}</p>
+                            <div style="text-align: center; margin-top: 10px;">
+                                <a href="/mapa/reporte/${report._id}" class="btn" style="padding: 5px 10px; font-size: 12px;">
+                                    Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    `);
+
+                marker.reportId = report._id;
+                markers.push(marker);
+
+                // Eventos para el popup
+                marker.on('popupopen', function() {
+                    popupOpen = true;
+                });
+
+                marker.on('popupclose', function() {
+                    popupOpen = false;
+                });
+            });
+
+            // Ajustar vista del mapa para mostrar todos los marcadores
+            if (reports.length > 0) {
+                const group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        // Enfocar marcador desde la lista
+        function focusMarker(reportId) {
+            const marker = markers.find(m => m.reportId === reportId);
+            if (marker) {
+                map.setView(marker.getLatLng(), 15);
+                marker.openPopup();
+            }
+        }
+
+        // Geolocalización del usuario
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    
+                    // Marcador de la ubicación del usuario
+                    L.marker([userLat, userLng])
+                        .addTo(map)
+                        .bindPopup('📍 Tu ubicación actual')
+                        .openPopup();
+
+                    // Centrar mapa en la ubicación del usuario
+                    map.setView([userLat, userLng], 13);
+                },
+                function(error) {
+                    console.log('Geolocalización no disponible:', error);
+                }
+            );
+        }
+
+        // Cargar datos al iniciar
+        loadMapData();
+
+        // Recargar datos cada 30 segundos
+        setInterval(loadMapData, 30000);
+    </script>
+</body>
+</html>

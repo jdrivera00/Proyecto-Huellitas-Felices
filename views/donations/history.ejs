@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .tokens-summary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        .total-donated {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .donations-list {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .donation-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        .donation-item:hover {
+            background: var(--background-color);
+        }
+        .donation-item:last-child {
+            border-bottom: none;
+        }
+        .donation-info {
+            flex: 1;
+        }
+        .donation-foundation {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .donation-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .donation-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: right;
+        }
+        .donation-date {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        .donation-type {
+            display: inline-block;
+            background: var(--background-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        .empty-state h3 {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Mi Historial de Donaciones</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/mascotas">🐕 Mascotas</a></li>
+            <li><a href="/donaciones">💝 Donaciones</a></li>
+            <li><a href="/profile">👤 Mi Perfil</a></li>
+            <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="history-header">
+            <h2>📊 Mi Historial de Donaciones</h2>
+            <a href="/donaciones" class="btn">💝 Hacer Nueva Donación</a>
+        </div>
+
+        <!-- Resumen de donaciones -->
+        <div class="tokens-summary">
+            <% 
+                const totalDonated = donations.reduce((total, donation) => total + donation.amount, 0);
+                const donationCount = donations.length;
+            %>
+            <div class="total-donated"><%= totalDonated %> tokens</div>
+            <p>Donados en <%= donationCount %> donaciones</p>
+        </div>
+
+        <% if (error) { %>
+            <div class="error" style="margin-bottom: 2rem;">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <!-- Lista de donaciones -->
+        <div class="donations-list">
+            <% if (donations.length > 0) { %>
+                <% donations.forEach(donation => { %>
+                    <div class="donation-item">
+                        <div class="donation-info">
+                            <div class="donation-foundation">
+                                <%= donation.foundationName %>
+                            </div>
+                            <div class="donation-details">
+                                <span class="donation-type">
+                                    <%= donation.type === 'comida' ? '🍖 Comida' : '' %>
+                                    <%= donation.type === 'juguetes' ? '🎾 Juguetes' : '' %>
+                                    <%= donation.type === 'medicinas' ? '💊 Medicinas' : '' %>
+                                    <%= donation.type === 'cuidados' ? '🏥 Cuidados' : '' %>
+                                    <%= donation.type === 'otro' ? '❤️ Otro' : '' %>
+                                </span>
+                                <% if (donation.description) { %>
+                                    <span>"<%= donation.description %>"</span>
+                                <% } %>
+                            </div>
+                            <div class="donation-date">
+                                <%= new Date(donation.date).toLocaleDateString('es-ES', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
+                            </div>
+                        </div>
+                        <div class="donation-amount">
+                            -<%= donation.amount %> tokens
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="empty-state">
+                    <h3>📭 Aún no has realizado donaciones</h3>
+                    <p>Tu historial de donaciones aparecerá aquí cuando comiences a ayudar a las fundaciones.</p>
+                    <a href="/donaciones" class="btn" style="margin-top: 1rem;">💝 Realizar mi primera donación</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

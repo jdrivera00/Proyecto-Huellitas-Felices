@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .about-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow);
+        }
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .hero-section p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .team-section {
+            margin-bottom: 3rem;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .team-card {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .team-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .team-role {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        .team-info {
+            text-align: left;
+            margin-top: 1rem;
+        }
+        .info-item {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+        }
+        .info-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 100px;
+        }
+        .info-value {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        .btn-light {
+            background: white;
+            color: var(--primary-color);
+        }
+        .btn-light:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        .description-section {
+            background: var(--surface-color);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        .description-section p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Conectando mascotas con hogares amorosos</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/nosotros" style="border-bottom-color: var(--primary-color);">ℹ️ Sobre Nosotros</a></li>
+            <li><a href="/mascotas">🐕 Mascotas</a></li>
+            <li><a href="/donaciones">💝 Donaciones</a></li>
+            <li><a href="/mapa">🗺️ Mapa</a></li>
+            <% if (user) { %>
+                <li><a href="/profile">👤 Mi Perfil</a></li>
+                <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+            <% } else { %>
+                <li><a href="/login">🔐 Iniciar Sesión</a></li>
+                <li><a href="/register">📝 Registrarse</a></li>
+            <% } %>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="about-container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h1>🐾 Sobre Huellitas Felices</h1>
+                <p>Somos una página web dedicada a darle una segunda oportunidad a los animales que más lo necesitan. Nuestra plataforma conecta a familias amorosas con mascotas que buscan un hogar, además de ofrecer un espacio para reportar animales perdidos y recibir donaciones que mejoren la vida de nuestros amigos de cuatro patas.</p>
+            </div>
+
+            <!-- Descripción Mejorada -->
+            <div class="description-section">
+                <p>En <strong>Huellitas Felices</strong> creemos que cada mascota merece una vida llena de amor y cuidado. Nuestro equipo trabaja con pasión para crear puentes entre animales necesitados y personas dispuestas a brindarles un hogar forever. Juntos, estamos construyendo una comunidad comprometida con el bienestar animal.</p>
+            </div>
+
+            <!-- Equipo -->
+            <div class="team-section">
+                <h2 style="text-align: center; margin-bottom: 1rem;">👥 Nuestro Equipo de Desarrollo</h2>
+                <p style="text-align: center; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem;">
+                    Conoce al equipo detrás de Huellitas Felices - Estudiantes apasionados por la tecnología y el bienestar animal.
+                </p>
+                <div class="team-grid">
+                    <!-- Juan David -->
+                    <div class="team-card">
+                        <div class="team-avatar">JD</div>
+                        <h3>Juan David Rivera Barona</h3>
+                        <div class="team-role">Fundador y Desarrollador</div>
+                        <p>Estudiante universitario de octavo semestre cursando la carrera de Ingeniería de Sistemas en la Universidad Santiago de Cali</p>
+                        <div class="team-info">
+                            <div class="info-item">
+                                <span class="info-label">📧 Correo:</span>
+                                <span class="info-value">juandarivera00@gmail.com</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">📞 Contacto:</span>
+                                <span class="info-value">3183053234</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jose David -->
+                    <div class="team-card">
+                        <div class="team-avatar">JM</div>
+                        <h3>Jose David Molina Delgado</h3>
+                        <div class="team-role">Desarrollador</div>
+                        <p>Estudiante universitario de noveno semestre cursando la carrera de Ingeniería de Sistemas en la Universidad Santiago de Cali</p>
+                        <div class="team-info">
+                            <div class="info-item">
+                                <span class="info-label">💻 Especialidad:</span>
+                                <span class="info-value">Desarrollo Backend y Base de Datos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Julio Cesar -->
+                    <div class="team-card">
+                        <div class="team-avatar">JC</div>
+                        <h3>Julio Cesar Madera Carvajal</h3>
+                        <div class="team-role">Desarrollador</div>
+                        <p>Estudiante universitario de cuarto semestre cursando la carrera de Tecnología en Desarrollo de Sistemas de la Información y de Software en la Universidad Santiago de Cali</p>
+                        <div class="team-info">
+                            <div class="info-item">
+                                <span class="info-label">💻 Especialidad:</span>
+                                <span class="info-value">Desarrollo Frontend y UX/UI</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="cta-section">
+                <h2>¿Listo para Marcar la Diferencia?</h2>
+                <p>Únete a nuestra comunidad y ayuda a cambiar vidas, una mascota a la vez.</p>
+                <div class="cta-buttons">
+                    <% if (user) { %>
+                        <a href="/mascotas" class="btn btn-light">🐕 Ver Mascotas</a>
+                        <a href="/donaciones" class="btn btn-light">💝 Hacer Donación</a>
+                        <a href="/mapa" class="btn btn-light">🗺️ Ver Mapa</a>
+                    <% } else { %>
+                        <a href="/register" class="btn btn-light">📝 Crear Cuenta</a>
+                        <a href="/mascotas" class="btn btn-light">🐕 Ver Mascotas</a>
+                        <a href="/donaciones" class="btn btn-light">💝 Ver Donaciones</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .pets-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .filters-section {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .filter-group select {
+            padding: 0.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--surface-color);
+        }
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .pet-card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .pet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        .pet-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        .pet-info {
+            padding: 1.5rem;
+        }
+        .pet-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .pet-details {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .pet-details span {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .pet-description {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .empty-state h3 {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        .pet-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Mascotas en Adopción</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/mascotas" style="border-bottom-color: var(--primary-color);">🐕 Mascotas</a></li>
+            <li><a href="/donaciones">💝 Donaciones</a></li>
+            <li><a href="/mapa">🗺️ Mapa</a></li>
+            <% if (user) { %>
+                <li><a href="/profile">👤 Mi Perfil</a></li>
+                <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+            <% } else { %>
+                <li><a href="/login">🔐 Iniciar Sesión</a></li>
+            <% } %>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="pets-header">
+            <h2>🐕 Mascotas Buscando Hogar</h2>
+            <% if (user) { %>
+                <a href="/mascotas/publicar/nueva" class="btn">➕ Publicar Mascota</a>
+            <% } %>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <h3>🔍 Filtrar Mascotas</h3>
+            <form method="GET" action="/mascotas">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="tipo">Tipo:</label>
+                        <select id="tipo" name="tipo">
+                            <option value="">Todos</option>
+                            <option value="perro" <%= filters.tipo === 'perro' ? 'selected' : '' %>>Perro</option>
+                            <option value="gato" <%= filters.tipo === 'gato' ? 'selected' : '' %>>Gato</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="tamaño">Tamaño:</label>
+                        <select id="tamaño" name="tamaño">
+                            <option value="">Todos</option>
+                            <option value="pequeño" <%= filters.tamaño === 'pequeño' ? 'selected' : '' %>>Pequeño</option>
+                            <option value="mediano" <%= filters.tamaño === 'mediano' ? 'selected' : '' %>>Mediano</option>
+                            <option value="grande" <%= filters.tamaño === 'grande' ? 'selected' : '' %>>Grande</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="género">Género:</label>
+                        <select id="género" name="género">
+                            <option value="">Todos</option>
+                            <option value="macho" <%= filters.género === 'macho' ? 'selected' : '' %>>Macho</option>
+                            <option value="hembra" <%= filters.género === 'hembra' ? 'selected' : '' %>>Hembra</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn">Aplicar Filtros</button>
+                    <a href="/mascotas" class="btn btn-outline">Limpiar Filtros</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Listado de mascotas -->
+        <% if (pets.length > 0) { %>
+            <div class="pets-grid">
+                <% pets.forEach(pet => { %>
+                    <div class="pet-card" onclick="window.location.href='/mascotas/<%= pet._id %>'">
+                        <div class="pet-image" style="<%= pet.image && pet.image !== '/images/pets/default-pet.jpg' ? 'background: none;' : '' %>">
+                            <% if (pet.image && pet.image !== '/images/pets/default-pet.jpg') { %>
+                                <img src="<%= pet.image %>" alt="<%= pet.name %>" style="width: 100%; height: 100%; object-fit: cover;">
+                            <% } else { %>
+                                <%= pet.type === 'perro' ? '🐕' : '🐱' %>
+                            <% } %>
+                        </div>
+                        <div class="pet-info">
+                            <div class="pet-name"><%= pet.name %></div>
+                            <div class="pet-details">
+                                <span><strong>Raza:</strong> <%= pet.breed %></span>
+                                <span><strong>Edad:</strong> <%= pet.age %> años</span>
+                                <span><strong>Ubicación:</strong> <%= pet.location %></span>
+                            </div>
+                            <div class="pet-badges">
+                                <span class="pet-badge" style="background: <%= pet.type === 'perro' ? '#4A90E2' : '#FF6B6B' %>;">
+                                    <%= pet.type === 'perro' ? '🐕 Perro' : '🐱 Gato' %>
+                                </span>
+                                <span class="pet-badge" style="background: var(--secondary-color);">
+                                    <%= pet.size %>
+                                </span>
+                                <span class="pet-badge" style="background: var(--accent-color);">
+                                    <%= pet.gender %>
+                                </span>
+                            </div>
+                            <div class="pet-description">
+                                <%= pet.description.length > 100 ? pet.description.substring(0, 100) + '...' : pet.description %>
+                            </div>
+                            <div class="actions">
+                                <a href="/mascotas/<%= pet._id %>" class="btn btn-sm btn-block">Conocer Más</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <h3>😔 No hay mascotas disponibles</h3>
+                <p>No encontramos mascotas que coincidan con tus criterios de búsqueda.</p>
+                <% if (user) { %>
+                    <a href="/mascotas/publicar/nueva" class="btn">¡Sé el primero en publicar!</a>
+                <% } else { %>
+                    <a href="/register" class="btn">Regístrate para publicar</a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

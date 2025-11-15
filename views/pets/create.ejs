@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .btn-cancel {
+            background: var(--text-secondary);
+        }
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Publicar Mascota en Adopción</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/mascotas">🐕 Mascotas</a></li>
+            <li><a href="/profile">👤 Mi Perfil</a></li>
+            <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>📝 Publicar Nueva Mascota</h2>
+            
+            <% if (error) { %>
+                <div class="error" style="margin-bottom: 2rem;">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <form action="/mascotas/publicar/nueva" method="POST" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Nombre de la mascota *</label>
+                        <input type="text" id="name" name="name" required placeholder="Ej: Max, Luna, Toby">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Tipo de mascota *</label>
+                        <select id="type" name="type" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="perro">🐕 Perro</option>
+                            <option value="gato">🐱 Gato</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="breed">Raza *</label>
+                        <input type="text" id="breed" name="breed" required placeholder="Ej: Labrador, Siamés, Mestizo">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Edad (años) *</label>
+                        <input type="number" id="age" name="age" min="0" max="30" required placeholder="Ej: 2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Género *</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="macho">Macho</option>
+                            <option value="hembra">Hembra</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="size">Tamaño *</label>
+                        <select id="size" name="size" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="pequeño">Pequeño</option>
+                            <option value="mediano">Mediano</option>
+                            <option value="grande">Grande</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Foto de la mascota</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <small style="color: var(--text-secondary);">Formatos aceptados: JPG, PNG, GIF. Máximo 5MB.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Ubicación *</label>
+                    <input type="text" id="location" name="location" required placeholder="Ej: Bogotá, Chapinero">
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneContact">Teléfono de contacto *</label>
+                    <input type="tel" id="phoneContact" name="phoneContact" required placeholder="Ej: 3001234567">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción de la mascota *</label>
+                    <textarea id="description" name="description" rows="4" required placeholder="Describe su personalidad, cuidados especiales, si es bueno con niños/otros animales, etc."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/mascotas" class="btn btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn">Publicar Mascota</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .report-details-container {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        .report-header {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .report-type-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: <%= lostPet.type === 'perdido' ? '#ff6b6b' : '#51cf66' %>;
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .pet-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .info-card {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .info-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        .info-item {
+            margin-bottom: 0.75rem;
+            display: flex;
+        }
+        .info-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 120px;
+        }
+        .info-value {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+        .contact-info {
+            background: var(--background-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+        }
+        .actions-section {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        .btn-resolved {
+            background: var(--success-color);
+        }
+        .btn-resolved:hover {
+            background: #219653;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Detalles del Reporte</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/mascotas">🐕 Mascotas</a></li>
+            <li><a href="/donaciones">💝 Donaciones</a></li>
+            <li><a href="/mapa">🗺️ Mapa</a></li>
+            <li><a href="/profile">👤 Mi Perfil</a></li>
+            <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="report-details-container">
+            <!-- Encabezado del reporte -->
+            <div class="report-header">
+                <div class="report-type-badge">
+                    <%= lostPet.type === 'perdido' ? '🔴 MASCOTA PERDIDA' : '🟢 MASCOTA ENCONTRADA' %>
+                </div>
+                <h1 class="pet-name"><%= lostPet.petName %></h1>
+                <p style="color: var(--text-secondary);">
+                    Reportado el <%= new Date(lostPet.date).toLocaleDateString('es-ES', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }) %>
+                </p>
+            </div>
+
+            <div class="details-grid">
+                <!-- Información de la mascota -->
+                <div class="info-card">
+                    <h3>🐾 Información de la Mascota</h3>
+                    <div class="info-item">
+                        <span class="info-label">Nombre:</span>
+                        <span class="info-value"><%= lostPet.petName %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Tipo:</span>
+                        <span class="info-value">
+                            <%= lostPet.petType === 'perro' ? '🐕 Perro' : lostPet.petType === 'gato' ? '🐱 Gato' : '🐾 Otro' %>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Raza:</span>
+                        <span class="info-value"><%= lostPet.breed %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Color:</span>
+                        <span class="info-value"><%= lostPet.color %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Estado:</span>
+                        <span class="info-value" style="color: 
+                            <%= lostPet.status === 'reportado' ? 'var(--warning-color)' : 'var(--success-color)' %>; 
+                            font-weight: 600;">
+                            <%= lostPet.status === 'reportado' ? '🟡 Reportado' : lostPet.status === 'devuelto' ? '✅ Devuelto' : '✅ Encontrado' %>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Información del reporte -->
+                <div class="info-card">
+                    <h3>📍 Información del Reporte</h3>
+                    <div class="info-item">
+                        <span class="info-label">Ubicación:</span>
+                        <span class="info-value"><%= lostPet.address %></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Coordenadas:</span>
+                        <span class="info-value">
+                            <%= lostPet.location.lat %>, <%= lostPet.location.lng %>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Fecha:</span>
+                        <span class="info-value">
+                            <%= new Date(lostPet.date).toLocaleDateString('es-ES', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) %>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Reportado por:</span>
+                        <span class="info-value"><%= lostPet.reporter.name %></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="info-card">
+                <h3>📝 Descripción</h3>
+                <p style="line-height: 1.6; color: var(--text-primary);">
+                    <%= lostPet.description %>
+                </p>
+            </div>
+
+            <!-- Información de contacto -->
+            <div class="contact-info">
+                <h3>📞 Información de Contacto</h3>
+                <div class="details-grid">
+                    <div>
+                        <div class="info-item">
+                            <span class="info-label">Nombre:</span>
+                            <span class="info-value"><%= lostPet.reporter.name %></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Teléfono:</span>
+                            <span class="info-value"><%= lostPet.contactPhone %></span>
+                        </div>
+                    </div>
+                    <div>
+                        <% if (lostPet.contactEmail) { %>
+                            <div class="info-item">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value"><%= lostPet.contactEmail %></span>
+                            </div>
+                        <% } %>
+                        <div class="info-item">
+                            <span class="info-label">Reportado por:</span>
+                            <span class="info-value"><%= lostPet.reporter.name %></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="actions-section">
+                <a href="/mapa" class="btn btn-outline">← Volver al Mapa</a>
+                
+                <% if (user && user.id === lostPet.reporter._id.toString() && lostPet.status === 'reportado') { %>
+                    <form action="/mapa/reporte/<%= lostPet._id %>/resuelto" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-resolved">
+                            <%= lostPet.type === 'perdido' ? '✅ Marcar como Devuelto' : '✅ Marcar como Encontrado' %>
+                        </button>
+                    </form>
+                <% } %>
+                
+                <a href="/mapa/reportar" class="btn">📢 Reportar Otra Mascota</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

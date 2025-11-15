@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>🐾 Huellitas Felices</h1>
+        <p>Encuentra a tu compañero perfecto</p>
+    </header>
+
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/nosotros">ℹ️ Sobre Nosotros</a></li>
+            <% if (user) { %>
+                <li><a href="/profile">👤 Mi Perfil</a></li>
+                <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+                <li class="user-status">
+                    <div class="user-avatar-small">
+                        <%= user.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <span><%= user.name %></span>
+                </li>
+            <% } else { %>
+                <li><a href="/login">🔐 Iniciar Sesión</a></li>
+                <li><a href="/register">📝 Registrarse</a></li>
+            <% } %>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h2>¡Bienvenido a Huellitas Felices! 🐶🐱</h2>
+            <p>Conectamos mascotas que necesitan un hogar con personas que quieren adoptar. Juntos podemos hacer la diferencia.</p>
+            
+            <% if (user) { %>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                    <a href="/mascotas" class="btn">🐕 Ver Mascotas</a>
+                    <a href="/donaciones" class="btn">💝 Donar</a>
+                    <a href="/mapa" class="btn">🗺️ Ver Mapa</a>
+                </div>
+            <% } else { %>
+                <a href="/register" class="btn">Comenzar Ahora</a>
+            <% } %>
+        </div>
+
+        <!-- Sección de características -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+            <div class="form-section" style="text-align: center;">
+                <h3>🏠 Adopción</h3>
+                <p>Encuentra a tu nueva mascota entre cientos de animales que buscan un hogar lleno de amor.</p>
+            </div>
+            
+            <div class="form-section" style="text-align: center;">
+                <h3>💝 Donaciones</h3>
+                <p>Ayuda a fundaciones y refugios con donaciones de comida, juguetes y medicinas.</p>
+            </div>
+            
+            <div class="form-section" style="text-align: center;">
+                <h3>🗺️ Mapa Interactivo</h3>
+                <p>Reporta y encuentra mascotas perdidas en tu zona con nuestro mapa en tiempo real.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
